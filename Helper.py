@@ -114,7 +114,7 @@ def md5_generator(file_path):
     else:
         return -1
 
-def Minecraft_directory_search(Dot_Minecraft_Path):       #Minecraft_directory_search('D:/MC/Test/1.7/.minecraft')
+def Generator_minecraft_directory_search(Dot_Minecraft_Path):       #Generator_minecraft_directory_search('D:/MC/Test/1.7/.minecraft')
     if os.path.exists(Dot_Minecraft_Path):
         folder_path=[]
         file_path=[]
@@ -197,7 +197,7 @@ def Minecraft_directory_search(Dot_Minecraft_Path):       #Minecraft_directory_s
     else:
         raise "Minecraft folder path not found!"
 
-def libraries_search(Dot_Minecraft_Path,selected_version_keyname,Full_version_info_list):        #Return Value=-1 - List for inherits missing; Return Value=-2 - Config file is uncomplete; Return Value=-3 - 'inheritsFrom' does not match any keys in the version list; Return Value=list - A list added libraries information
+def Generator_libraries_search(Dot_Minecraft_Path,selected_version_keyname,Full_version_info_list):        #Return Value=-1 - List for inherits missing; Return Value=-2 - Config file is uncomplete; Return Value=-3 - 'inheritsFrom' does not match any keys in the version list; Return Value=list - A list added libraries information
     depend_list=[selected_version_keyname]
     libraries_folder_path=[]
     count=0   # Make sure the main class is the first one
@@ -235,7 +235,7 @@ def libraries_search(Dot_Minecraft_Path,selected_version_keyname,Full_version_in
                         elif officialMinecraft_class_find and not forge_class_find and not liteloader_class_find:
                             pass
                 if temp.has_key('libraries'):
-                    for s in libraries_list_analyzer(Dot_Minecraft_Path,temp['libraries']):
+                    for s in Generator_libraries_list_analyzer(Dot_Minecraft_Path,temp['libraries']):
                         libraries_folder_path.append(s)
                 else:
                     sys.stderr.write('No libraries information in the json file!')
@@ -292,7 +292,7 @@ def libraries_search(Dot_Minecraft_Path,selected_version_keyname,Full_version_in
     Full_version_info_list[selected_version_keyname]['libraries_path']=libraries_folder_path
     return Full_version_info_list
 
-def libraries_list_analyzer(Dot_Minecraft_Path,libraries_list):        #Return Value=list - A list of libraries path (not absolute path)
+def Generator_libraries_list_analyzer(Dot_Minecraft_Path,libraries_list):        #Return Value=list - A list of libraries path (not absolute path)
     libraries_detail_path_list=[]
     for individual_library_dict in libraries_list:
         library_name=individual_library_dict['name']
@@ -320,7 +320,7 @@ def libraries_list_analyzer(Dot_Minecraft_Path,libraries_list):        #Return V
             sys.stderr.write('library file is missing: '+Dot_Minecraft_Path+'/libraries/'+library_name+' . Minecraft may not work!'+'\n')
     return libraries_detail_path_list
 
-def assets_list_analyzer(Dot_Minecraft_Path,Full_version_dict,selected_version):
+def Generator_assets_list_analyzer(Dot_Minecraft_Path,Full_version_dict,selected_version):
     version_dict=Full_version_dict[selected_version]
     hash_list=[]
     assets_list=[]
@@ -345,7 +345,7 @@ def assets_list_analyzer(Dot_Minecraft_Path,Full_version_dict,selected_version):
 
     return assets_list
 
-def calculate_file_to_zip(Dot_Minecraft_Path,Full_version_dict,selected_version):
+def Generator_calculate_file_to_zip(Dot_Minecraft_Path,Full_version_dict,selected_version):
     version_dict=Full_version_dict[selected_version]
 
     file_list={}
@@ -364,7 +364,7 @@ def calculate_file_to_zip(Dot_Minecraft_Path,Full_version_dict,selected_version)
         file_list['libraries'].append(Dot_Minecraft_Path+'/'+i)
 
     # Assets file
-    file_list['assets']=assets_list_analyzer(Dot_Minecraft_Path,Full_version_dict,selected_version)
+    file_list['assets']=Generator_assets_list_analyzer(Dot_Minecraft_Path,Full_version_dict,selected_version)
 
     # Scripts file
     folder_list['scripts']=Dot_Minecraft_Path+'/scripts'
@@ -379,7 +379,7 @@ def calculate_file_to_zip(Dot_Minecraft_Path,Full_version_dict,selected_version)
 
     return (file_list,folder_list)
 
-def json_dump(upload_path,Dot_Minecraft_Path,Full_version_dict,selected_version,entirePackageFiles):
+def Generator_json_dump(upload_path,Dot_Minecraft_Path,Full_version_dict,selected_version,entirePackageFiles):
     Templete=json.load(open(os.path.split(Dot_Minecraft_Path)[0]+'/'+'Example.json','r'))
 
     json_structure=Templete.copy()
@@ -406,7 +406,7 @@ def json_dump(upload_path,Dot_Minecraft_Path,Full_version_dict,selected_version,
     json_file.close()
     return json_structure
 
-def zipping(Dot_Minecraft_Path,destination,file_and_folder_tuple):
+def Generator_zipping(Dot_Minecraft_Path,destination,file_and_folder_tuple):
     file_dict,folder_dict=file_and_folder_tuple
     entirePackageFiles=[]
     zip_file_path=[]
@@ -607,7 +607,7 @@ def test():
     Dot_Minecraft_Path='D:/MC/NUK3TOWN/.minecraft'
     if not os.path.isdir('D:/MC/NUK3TOWN/upload'):
         os.mkdir('D:/MC/NUK3TOWN/upload')
-    dict_a=Minecraft_directory_search(Dot_Minecraft_Path)
+    dict_a=Generator_minecraft_directory_search(Dot_Minecraft_Path)
     selection_list=zip([a for a in string.lowercase[:len(dict_a.keys())]],dict_a.keys())
     for option, version in selection_list:
         print option+': '+version
@@ -623,17 +623,17 @@ def test():
     if not found_version: 
         print 'Your option is wrong! Please restart the program！'
         return -1
-    dict_a=libraries_search(Dot_Minecraft_Path,select,dict_a)
-    file_tuple=calculate_file_to_zip(Dot_Minecraft_Path,dict_a,select)
-    entirePackageFiles=zipping(Dot_Minecraft_Path,'D:/MC/NUK3TOWN/upload',file_tuple)
-    json_dump('D:/MC/NUK3TOWN/upload',Dot_Minecraft_Path,dict_a,select,entirePackageFiles)
+    dict_a=Generator_libraries_search(Dot_Minecraft_Path,select,dict_a)
+    file_tuple=Generator_calculate_file_to_zip(Dot_Minecraft_Path,dict_a,select)
+    entirePackageFiles=Generator_zipping(Dot_Minecraft_Path,'D:/MC/NUK3TOWN/upload',file_tuple)
+    Generator_json_dump('D:/MC/NUK3TOWN/upload',Dot_Minecraft_Path,dict_a,select,entirePackageFiles)
 
-def main():
+def create_package():
     Dot_Minecraft_Path=os.getcwd()+'/.minecraft'
     upload_path=os.getcwd()+'/upload'
     if not os.path.isdir(upload_path):
         os.mkdir(upload_path)
-    dict_a=Minecraft_directory_search(Dot_Minecraft_Path)
+    dict_a=Generator_minecraft_directory_search(Dot_Minecraft_Path)
 
     selection_list=zip([a for a in string.lowercase[:len(dict_a.keys())]],dict_a.keys())
     for option, version in selection_list:
@@ -650,13 +650,13 @@ def main():
     if not found_version: 
         print 'Your option is wrong! Please restart the program！'
         return -1
-    dict_a=libraries_search(Dot_Minecraft_Path,select,dict_a)
-    file_and_tuple=calculate_file_to_zip(Dot_Minecraft_Path,dict_a,select)
-    entirePackageFiles,zip_file_path=zipping(Dot_Minecraft_Path,upload_path,file_and_tuple)
+    dict_a=Generator_libraries_search(Dot_Minecraft_Path,select,dict_a)
+    file_and_tuple=Generator_calculate_file_to_zip(Dot_Minecraft_Path,dict_a,select)
+    entirePackageFiles,zip_file_path=Generator_zipping(Dot_Minecraft_Path,upload_path,file_and_tuple)
     entirePackageFiles=upload_section(entirePackageFiles,zip_file_path)
-    json_dump(upload_path,Dot_Minecraft_Path,dict_a,select,entirePackageFiles)
+    Generator_json_dump(upload_path,Dot_Minecraft_Path,dict_a,select,entirePackageFiles)
     print 'Complete!'
     pause()
 
-main()
+create_package()
 #print upload_section([{'name':'ll'}],['E:/ll.mp4'])
