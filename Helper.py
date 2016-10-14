@@ -401,12 +401,22 @@ def Generator_calculate_file_to_zip(Dot_Minecraft_Path,Full_version_dict,selecte
                     print 'This is ./minecraft folder!'
             # Absolute Path
             elif path_need_added.find(Dot_Minecraft_Path)==-1:
-                if os.path.isfile(Dot_Minecraft_Path+'/'+path_need_added):
-                    file_list['custom_file']=Dot_Minecraft_Path+'/'+path_need_added
-                if os.path.isdir(Dot_Minecraft_Path+'/'+path_need_added):
+                if os.path.isfile(path_need_added):
+                    file_list[os.path.split(path_need_added)[1]]=path_need_added
+                elif os.path.isfile(Dot_Minecraft_Path+'/'+path_need_added):
+                    file_list[path_need_added]=Dot_Minecraft_Path+'/'+path_need_added
+                elif os.path.isdir(Dot_Minecraft_Path+'/'+path_need_added):
                     name_for_folder=raw_input('Name the folder (optional): ')
                     if not name_for_folder:
                         name_for_folder=path_need_added
+                    folder_list[name_for_folder]=Dot_Minecraft_Path+'/'+path_need_added
+                elif os.path.isdir(path_need_added):
+                    name_for_folder=raw_input('Name the folder (optional): ')
+                    if not name_for_folder:
+                        if not folder_list.has_key(name_for_folder):
+                            name_for_folder=os.path.split(path_need_added)[1]
+                        else:
+                            print 'Name exists! Put another name in it!'
                     folder_list[name_for_folder]=path_need_added
                 else:
                     print 'Not a vaild path!'

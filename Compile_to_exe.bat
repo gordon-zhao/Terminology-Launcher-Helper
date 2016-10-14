@@ -1,1 +1,2 @@
-pyinstaller ConfigCreator.py
+pyinstaller Helper.py
+pause
