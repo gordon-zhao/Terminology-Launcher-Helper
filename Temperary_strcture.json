@@ -1,0 +1,25 @@
+{
+	"version":"",
+	"md5":"package_md5",
+	"fileSystem":[
+		{
+			"folder":"",
+			"add":[
+				{
+					"file":"file_name",
+					"sha1":"",
+					"md5":"",
+					"path":"absolutr_path"
+				}
+			],
+			"remove":[
+				{
+					"file":"file_name",
+					"sha1":"",
+					"md5":"",
+					"path":"absolute_path"
+				}
+			]
+		}
+	]
+}

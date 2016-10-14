@@ -377,6 +377,46 @@ def Generator_calculate_file_to_zip(Dot_Minecraft_Path,Full_version_dict,selecte
     # Config file
     folder_list['config']=Dot_Minecraft_Path+'/config'
 
+    print 'Pending list to zip: /*  , /libraries , /assets , /scripts , /mods , native files '
+    # Custom folder
+    add_folder=raw_input('Do you want to zip extra folder (or files)? (Y/N) :')
+    if add_folder=='Y' or add_folder=='y' or add_folder=='t' or add_folder=='T':
+        print 'You are going to add path. Example: C:/folder_name or path in ~/.minecraft'
+        while True:
+            path_need_added=raw_input('Enter the path you want to add in: ')
+            # Local Path
+            if path_need_added.find(Dot_Minecraft_Path)==0:
+                if len(path_need_added[len(Dot_Minecraft_Path):])>0:
+                    if not os.path.splitext(path_need_added)[1]=='':
+                        name_for_folder=raw_input('Name the folder (optional): ')
+                        if not name_for_folder:
+                            if not folder_list.has_key(name_for_folder):
+                                name_for_folder=path_need_added[len(Dot_Minecraft_Path):]
+                            else:
+                                print 'Name exists! Put another name in it!'
+                        folder_list[name_for_folder]=path_need_added
+                    else:
+                        print 'Path is not a folder!'
+                else:
+                    print 'This is ./minecraft folder!'
+            # Absolute Path
+            elif path_need_added.find(Dot_Minecraft_Path)==-1:
+                if os.path.isfile(Dot_Minecraft_Path+'/'+path_need_added):
+                    file_list['custom_file']=Dot_Minecraft_Path+'/'+path_need_added
+                if os.path.isdir(Dot_Minecraft_Path+'/'+path_need_added):
+                    name_for_folder=raw_input('Name the folder (optional): ')
+                    if not name_for_folder:
+                        name_for_folder=path_need_added
+                    folder_list[name_for_folder]=path_need_added
+                else:
+                    print 'Not a vaild path!'
+
+            elif not path_need_added:
+                print 'Path cannot be blank!'
+            exit=raw_input('Do you want to continue? (Y/N): ')
+            if exit=='N' or exit=='n':
+                break
+
     return (file_list,folder_list)
 
 def Generator_json_dump(upload_path,Dot_Minecraft_Path,Full_version_dict,selected_version,entirePackageFiles):
@@ -533,14 +573,16 @@ class upyun_upload():
             print 'Request Id: ' + se.request_id
             print 'HTTP Status Code: ' + str(se.status)
             print 'Error Message:    ' + se.msg + '\n'
+            pause()
         except self.upyun.UpYunClientException as ce:
             print 'Except an UpYunClientException ...'
             print 'Error Message: ' + ce.msg + '\n'
+            pause()
 
     def run(self, bucket, domain='.b0.upaiyun.com', username=None, password=None, secret=None, local_path='', upload_path=''):
         self.Upyun(bucket, domain, username, password, secret, local_path, upload_path)
 
-def upload_section(entirePackageFiles, zip_file_path):
+def upload_section(entirePackageFiles, file_path_list):
     modules=['ftp','upyun']
     objects=[]
     lock=threading.Lock()
@@ -554,7 +596,7 @@ def upload_section(entirePackageFiles, zip_file_path):
             match=True
     if not match:
         print 'Incorrect input. Please enter another option!'
-        entirePackageFiles=upload_section(entirePackageFiles, zip_file_path)
+        entirePackageFiles=upload_section(entirePackageFiles, file_path_list)
     elif match:
         if selection==modules[0]:
             address=raw_input('Please enter the domain/ip address: ')
@@ -570,7 +612,7 @@ def upload_section(entirePackageFiles, zip_file_path):
             upload_path=raw_input('Upload to which directory (default: /)? ')
             global download_address
             download_address={}
-            for temp in zip_file_path:
+            for temp in file_path_list:
                 instance=ftp_upload(address, port, username, password, temp, upload_path+'/'+os.path.split(temp)[1])
                 instance.start()
                 objects.append(instance)
@@ -584,10 +626,13 @@ def upload_section(entirePackageFiles, zip_file_path):
             bucket=raw_input('Please enter the service name: ')
             domain=raw_input('Please enter the domain (default: .b0.upaiyun.com)')
             username=raw_input('Please enter the operator name: ')
-            password=raw_input('Please enter the password: ')
+            if username:
+                password=raw_input('Please enter the password: ')
+            else:
+                password=None
             secret=raw_input('Enter the form key if available: ')
             upload_path=raw_input('Upload to which directory (default: /)? ')
-            for temp in zip_file_path:
+            for temp in file_path_list:
                 instance=upyun_upload()
                 try:
                     result=instance.Upyun(bucket, domain, username, password, secret, temp, upload_path)
@@ -601,7 +646,6 @@ def upload_section(entirePackageFiles, zip_file_path):
 
 def pause():
     input('Press [Enter] to continue...')
-
 
 def test():
     Dot_Minecraft_Path='D:/MC/NUK3TOWN/.minecraft'
@@ -653,10 +697,12 @@ def create_package():
     dict_a=Generator_libraries_search(Dot_Minecraft_Path,select,dict_a)
     file_and_tuple=Generator_calculate_file_to_zip(Dot_Minecraft_Path,dict_a,select)
     entirePackageFiles,zip_file_path=Generator_zipping(Dot_Minecraft_Path,upload_path,file_and_tuple)
-    entirePackageFiles=upload_section(entirePackageFiles,zip_file_path)
+    upload_or_not=raw_input('Do you want to upload? (Y/N): ')
+    if upload_or_not=='Y' or upload_or_not=='y' or upload_or_not=='t' or upload_or_not=='T':
+        entirePackageFiles=upload_section(entirePackageFiles,zip_file_path)
     Generator_json_dump(upload_path,Dot_Minecraft_Path,dict_a,select,entirePackageFiles)
     print 'Complete!'
-    pause()
 
 create_package()
+pause()
 #print upload_section([{'name':'ll'}],['E:/ll.mp4'])
