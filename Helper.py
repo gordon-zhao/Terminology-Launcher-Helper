@@ -247,7 +247,9 @@ def Generator_libraries_search(Dot_Minecraft_Path,selected_version_keyname,Full_
                     tweakclass_start,tweakclass_end=(0,0)
                     while not tweakclass_start==-1:
                         tweakclass_start=temp['minecraftArguments'].find('--tweakClass ',tweakclass_end)
-                        tweakclass_end=temp['minecraftArguments'].find(' --',tweakclass_start)
+                        tweakclass_end=temp['minecraftArguments'].find(' --',tweakclass_start+13)
+                        if tweakclass_end==-1:
+                            tweakclass_end=len(temp['minecraftArguments'])
                         if not Full_version_info_list[selected_version_keyname].has_key('tweakClasses'):
                             Full_version_info_list[selected_version_keyname]['tweakClasses']=[]
                         if not tweakclass_start==-1:
@@ -315,7 +317,10 @@ def Generator_libraries_list_analyzer(Dot_Minecraft_Path,libraries_list):       
         try:
             file_list=os.listdir(Dot_Minecraft_Path+'/libraries/'+library_name)
             for i in file_list:
-                libraries_detail_path_list.append('libraries/'+library_name+'/'+i)
+                if i=='guava-15.0.jar':
+                    pass
+                else:
+                    libraries_detail_path_list.append('libraries/'+library_name+'/'+i)
         except WindowsError:
             sys.stderr.write('library file is missing: '+Dot_Minecraft_Path+'/libraries/'+library_name+' . Minecraft may not work!'+'\n')
     return libraries_detail_path_list
