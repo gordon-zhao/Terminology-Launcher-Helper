@@ -718,7 +718,7 @@ def create_package():
         else:
             continue
     if not found_version: 
-        print 'Your option is wrong! Please restart the program！'
+        print 'Your option is wrong! Please restart the program! '
         return -1
     dict_a=Generator_libraries_search(Dot_Minecraft_Path,select,dict_a)
     file_and_tuple=Generator_calculate_file_to_zip(Dot_Minecraft_Path,dict_a,select)
