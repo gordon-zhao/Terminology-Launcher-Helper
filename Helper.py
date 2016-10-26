@@ -140,7 +140,7 @@ def Generator_minecraft_directory_search(Dot_Minecraft_Path):       #Generator_m
                         if os.path.splitext(dlls)[1]=='.dll' and dlls=='jinput-dx8.dll' or dlls=='jinput-dx8_64.dll':
                             versions_list[os.path.splitext(temp)[0]]['Native_files_folder']=Dot_Minecraft_Path+'/'+temp
                         else:
-                            raise 'Native files are missing'
+                            raise Exception('Native files are missing')
                     del dlls
         del temp
 
@@ -195,7 +195,7 @@ def Generator_minecraft_directory_search(Dot_Minecraft_Path):       #Generator_m
             return versions_list
         
     else:
-        raise "Minecraft folder path not found!"
+        raise Exception("Minecraft folder path not found!")
 
 def Generator_libraries_search(Dot_Minecraft_Path,selected_version_keyname,Full_version_info_list):        #Return Value=-1 - List for inherits missing; Return Value=-2 - Config file is uncomplete; Return Value=-3 - 'inheritsFrom' does not match any keys in the version list; Return Value=list - A list added libraries information
     depend_list=[selected_version_keyname]
