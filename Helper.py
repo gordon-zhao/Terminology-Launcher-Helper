@@ -296,6 +296,8 @@ def Generator_libraries_search(Dot_Minecraft_Path,selected_version_keyname,Full_
 
 def Generator_libraries_list_analyzer(Dot_Minecraft_Path,libraries_list):        #Return Value=list - A list of libraries path (not absolute path)
     libraries_detail_path_list=[]
+    guava15=False
+    guava17=False
     for individual_library_dict in libraries_list:
         library_name=individual_library_dict['name']
         first_seperate_sign=library_name.find(':')
@@ -318,11 +320,20 @@ def Generator_libraries_list_analyzer(Dot_Minecraft_Path,libraries_list):       
             file_list=os.listdir(Dot_Minecraft_Path+'/libraries/'+library_name)
             for i in file_list:
                 if i=='guava-15.0.jar':
+                    guava15=library_name
                     pass
+                elif i=='guava-17.0.jar':
+                    guava17=True
+                    libraries_detail_path_list.append('libraries/'+library_name+'/'+i)
                 else:
                     libraries_detail_path_list.append('libraries/'+library_name+'/'+i)
         except WindowsError:
             sys.stderr.write('library file is missing: '+Dot_Minecraft_Path+'/libraries/'+library_name+' . Minecraft may not work!'+'\n')
+        if not guava17:
+            if guava15:
+                libraries_detail_path_list.append('libraries/'+guava15+'/'+'guava-15.0.jar')
+            else:
+                sys.stderr.write("library file is missing: guava-15.0.jar or guava-17.0.jar")
     return libraries_detail_path_list
 
 def Generator_assets_list_analyzer(Dot_Minecraft_Path,Full_version_dict,selected_version):
@@ -718,6 +729,8 @@ def create_package():
     Generator_json_dump(upload_path,Dot_Minecraft_Path,dict_a,select,entirePackageFiles)
     print 'Complete!'
 
+def main():
+    select=raw_input
 create_package()
 pause()
 #print upload_section([{'name':'ll'}],['E:/ll.mp4'])
